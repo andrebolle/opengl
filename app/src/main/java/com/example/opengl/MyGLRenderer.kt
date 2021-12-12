@@ -4,7 +4,9 @@ import javax.microedition.khronos.opengles.GL10
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
+import android.util.Log
 import com.example.opengl.Triangle
+import java.nio.IntBuffer
 
 class MyGLRenderer : GLSurfaceView.Renderer {
 
@@ -15,7 +17,29 @@ class MyGLRenderer : GLSurfaceView.Renderer {
     private val projectionMatrix = FloatArray(16)
     private val viewMatrix = FloatArray(16)
 
+    fun glInfo() {
+
+//        OpenGL Version	GLSL Version
+//        2.0	1.10
+//        2.1	1.20
+//        3.0	1.30
+//        3.1	1.40
+//        3.2	1.50
+        Log.i("MyGLRenderer", GLES20.glGetString(GLES20.GL_VENDOR))
+        Log.i("MyGLRenderer", GLES20.glGetString(GLES20.GL_RENDERER))
+        Log.i("MyGLRenderer", GLES20.glGetString(GLES20.GL_VERSION))
+        Log.i("MyGLRenderer", GLES20.glGetString(GLES20.GL_SHADING_LANGUAGE_VERSION))
+
+
+        val count = IntArray(1)
+        GLES20.glGetIntegerv(GLES20.GL_MAX_VERTEX_ATTRIBS, count, 0)
+        Log.i("MyGLRenderer", "${count[0]}")
+    }
+
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
+
+        glInfo()
+
         // Set the background frame color
         GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f)
 
