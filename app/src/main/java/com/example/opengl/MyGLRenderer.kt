@@ -1,3 +1,5 @@
+package com.example.opengl
+
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -5,35 +7,33 @@ import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import android.opengl.Matrix
 import android.util.Log
-import com.example.opengl.Triangle
-import java.nio.IntBuffer
 
 class MyGLRenderer : GLSurfaceView.Renderer {
-
-    private lateinit var mTriangle: Triangle
+    private val _tag = "com.example.opengl.MyGLRenderer"
+    private lateinit var shape: Shape2D
 
     // vPMatrix is an abbreviation for "Model View Projection Matrix"
-    private val vPMatrix = FloatArray(16)
-    private val projectionMatrix = FloatArray(16)
+    private val vPMatrix = FloatArray(16) //FIXME Why am I here?
+    private val projection = FloatArray(16) //FIXME The aspect ratio.
     private val viewMatrix = FloatArray(16)
 
-    fun glInfo() {
+    private fun glInfo() {
 
 //        OpenGL Version	GLSL Version
-//        2.0	1.10
-//        2.1	1.20
-//        3.0	1.30
-//        3.1	1.40
-//        3.2	1.50
-        Log.i("MyGLRenderer", GLES20.glGetString(GLES20.GL_VENDOR))
-        Log.i("MyGLRenderer", GLES20.glGetString(GLES20.GL_RENDERER))
-        Log.i("MyGLRenderer", GLES20.glGetString(GLES20.GL_VERSION))
-        Log.i("MyGLRenderer", GLES20.glGetString(GLES20.GL_SHADING_LANGUAGE_VERSION))
+//        2.0               1.10
+//        2.1               1.20
+//        3.0               1.30
+//        3.1               1.40
+//        3.2               1.50
+        Log.i(_tag, GLES20.glGetString(GLES20.GL_VENDOR))
+        Log.i(_tag, GLES20.glGetString(GLES20.GL_RENDERER))
+        Log.i(_tag, GLES20.glGetString(GLES20.GL_VERSION))
+        Log.i(_tag, GLES20.glGetString(GLES20.GL_SHADING_LANGUAGE_VERSION))
 
 
         val count = IntArray(1)
         GLES20.glGetIntegerv(GLES20.GL_MAX_VERTEX_ATTRIBS, count, 0)
-        Log.i("MyGLRenderer", "${count[0]}")
+        Log.i(_tag, "${count[0]}")
     }
 
     override fun onSurfaceCreated(unused: GL10, config: EGLConfig) {
@@ -44,7 +44,7 @@ class MyGLRenderer : GLSurfaceView.Renderer {
         GLES20.glClearColor(0.0f, 0.0f, 1.0f, 1.0f)
 
         // initialize a triangle
-        mTriangle = Triangle()
+        shape = Shape2D(Meshes.polygon(400))
     }
 
     // Draw every frame
@@ -54,19 +54,19 @@ class MyGLRenderer : GLSurfaceView.Renderer {
 
         // Set the camera position (View matrix)
         Matrix.setLookAtM(viewMatrix, 0, 0f, 0f, -3f, 0f, 0f, 0f, 0f, 1.0f, 0.0f)
-
         // Calculate the projection and view transformation
-        Matrix.multiplyMM(vPMatrix, 0, projectionMatrix, 0, viewMatrix, 0)
+        Matrix.multiplyMM(vPMatrix, 0, projection, 0, viewMatrix, 0)
 
         // Draw shape
-        //mTriangle.draw(vPMatrix)
-        mTriangle.draw()
+        shape.draw(projection)
     }
-
-
 
     // Reset the viewport if the screen size changes, e.g. if it rotates.
     override fun onSurfaceChanged(unused: GL10, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
+
+        Matrix.orthoM(projection, 0, -width / 2f, width / 2f, -height / 2f, height / 2f, -1f, 1f)
+
+
     }
 }

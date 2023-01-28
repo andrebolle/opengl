@@ -1,5 +1,6 @@
 import android.content.Context
 import android.opengl.GLSurfaceView
+import com.example.opengl.MyGLRenderer
 
 class MyGLSurfaceView(context: Context) : GLSurfaceView(context) {
 
